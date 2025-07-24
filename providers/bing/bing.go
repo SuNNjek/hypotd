@@ -66,8 +66,7 @@ func getPotdImage() (*image, error) {
 
 	defer resp.Body.Close()
 
-	reader := io.TeeReader(resp.Body, os.Stdout)
-	decoder := json.NewDecoder(reader)
+	decoder := json.NewDecoder(resp.Body)
 
 	var imgResp *imageArchiveResponse
 	if err := decoder.Decode(&imgResp); err != nil {

@@ -1,2 +1,2 @@
 # hypotd
-Download picture-of-the-day and set them via hyprpaper
+Download pictures-of-the-day and set them via hyprpaper

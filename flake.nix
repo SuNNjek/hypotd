@@ -1,6 +1,6 @@
 {
     description = ''
-        TODO: Fill this in ^^
+        Download pictures-of-the-day and set them via hyprpaper
     '';
 
     inputs = {
@@ -21,6 +21,11 @@
                 packages = with pkgs; [
                     go
                 ];
+            };
+
+            packages = {
+                default = self.packages.${system}.hypotd;
+                hypotd = pkgs.callPackage ./nix/package.nix {};
             };
         }
     ) // flake-utils.lib.eachDefaultSystemPassThrough (system: {
