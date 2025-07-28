@@ -1,14 +1,22 @@
 package bing
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path"
+
+	"github.com/SuNNjek/hypotd/utils"
 )
+
+type BingProvider struct{}
+
+func NewBingProvider() *BingProvider {
+	return &BingProvider{}
+}
 
 type image struct {
 	UrlBase string `json:"urlbase"`
@@ -19,8 +27,8 @@ type imageArchiveResponse struct {
 	Images []*image `json:"images"`
 }
 
-func DownloadPotd() (string, error) {
-	image, err := getPotdImage()
+func (b *BingProvider) DownloadPotd(ctx context.Context) (string, error) {
+	image, err := getPotdImage(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -44,29 +52,29 @@ func DownloadPotd() (string, error) {
 	defer file.Close()
 
 	url := fmt.Sprintf("https://www.bing.com%s_UHD.jpg", image.UrlBase)
-	imgResp, err := http.DefaultClient.Get(url)
+	imgBody, err := utils.GetContext(ctx, url)
 	if err != nil {
 		return "", nil
 	}
 
-	defer imgResp.Body.Close()
+	defer imgBody.Close()
 
-	if _, err := io.Copy(file, imgResp.Body); err != nil {
+	if _, err := io.Copy(file, imgBody); err != nil {
 		return "", nil
 	}
 
 	return path, nil
 }
 
-func getPotdImage() (*image, error) {
-	resp, err := http.DefaultClient.Get("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1")
+func getPotdImage(ctx context.Context) (*image, error) {
+	body, err := utils.GetContext(ctx, "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1")
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer body.Close()
 
-	decoder := json.NewDecoder(resp.Body)
+	decoder := json.NewDecoder(body)
 
 	var imgResp *imageArchiveResponse
 	if err := decoder.Decode(&imgResp); err != nil {

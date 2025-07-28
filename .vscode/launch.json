@@ -10,6 +10,10 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/hypotd",
+            "cwd": "${workspaceFolder}",
+            "args": [
+               "--config", "config.toml"
+            ],
             "linux": {
                 "output": "/tmp/__debug_hypotd"
             }
