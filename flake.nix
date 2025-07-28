@@ -30,5 +30,9 @@
         }
     ) // flake-utils.lib.eachDefaultSystemPassThrough (system: {
         # TODO
+        homeManagerModules = {
+            default = self.homeManagerModules.hypotd;
+            hypotd = import ./nix/modules/home-manager.nix self;
+        };
     });
 }
