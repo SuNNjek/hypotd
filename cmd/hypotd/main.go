@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
-	"os/exec"
 
+	"github.com/SuNNjek/hypotd/hyprpaper"
 	"github.com/SuNNjek/hypotd/providers/bing"
 )
 
@@ -14,18 +14,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	unloadCmd := exec.Command("hyprctl", "hyprpaper", "unload", "all")
-	if err := unloadCmd.Run(); err != nil {
-		log.Fatalln(err)
-	}
-
-	preloadCmd := exec.Command("hyprctl", "hyprpaper", "preload", path)
-	if err := preloadCmd.Run(); err != nil {
-		log.Fatalln(err)
-	}
-
-	wallpaperCmd := exec.Command("hyprctl", "hyprpaper", "wallpaper", fmt.Sprintf(",%s", path))
-	if err := wallpaperCmd.Run(); err != nil {
+	if err := hyprpaper.SetWallpaper(context.Background(), path); err != nil {
 		log.Fatalln(err)
 	}
 }
