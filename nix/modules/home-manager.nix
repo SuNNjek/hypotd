@@ -40,11 +40,17 @@ in {
       (tomlFormat.generate "hypotd-config.toml" cfg.config);
 
     systemd.user.services.hypotd = {
-      Unit.Description = "hypotd - Picture of the day for hyprpaper";
-      Install.WantedBy = [ "graphical-session.target" ];
+      Unit = {
+        Description = "hypotd - Picture of the day for hyprpaper";
+        After = [ "network-online.target" ];
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
       Service = {
         Type = "oneshot";
         Restart = "on-failure";
+        RestartSec = "5";
         ExecStart = "${getExe cfg.package}";
       };
     };
