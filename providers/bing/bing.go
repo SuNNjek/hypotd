@@ -27,23 +27,13 @@ type imageArchiveResponse struct {
 	Images []*image `json:"images"`
 }
 
-func (b *BingProvider) DownloadPotd(ctx context.Context) (string, error) {
+func (b *BingProvider) DownloadPotd(ctx context.Context, targetDir string) (string, error) {
 	image, err := getPotdImage(ctx)
 	if err != nil {
 		return "", err
 	}
 
-	userCacheDir, err := os.UserCacheDir()
-	if err != nil {
-		return "", nil
-	}
-
-	downloadDir := path.Join(userCacheDir, "hypotd")
-	if err := os.MkdirAll(downloadDir, 0755); err != nil {
-		return "", nil
-	}
-
-	path := path.Join(downloadDir, fmt.Sprintf("bing_%s.jpg", image.Hash))
+	path := path.Join(targetDir, fmt.Sprintf("bing_%s.jpg", image.Hash))
 	file, err := os.Create(path)
 	if err != nil {
 		return "", nil
