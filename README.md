@@ -59,3 +59,16 @@ provider = "pexels"
 [pexels]
 apiKey = "<API_KEY>" # <-- Replace with your API key
 ```
+
+### NASA Astronomy Picture of the Day
+
+For the APOD provider you *can* provide an API key. If you don't, it will use the `DEMO_KEY` key
+which is rate-limited (maximum of 30 requests per hour, 50 per day). If you plan to logout/login more
+often than that, maybe request an API key ^^
+
+```toml
+provider = "apod"
+
+[apod]
+apiKey = "<API_KEY>" # <-- Replace with your API key (or don't specify any)
+```

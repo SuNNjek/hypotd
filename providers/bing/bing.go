@@ -24,7 +24,7 @@ type imageArchiveResponse struct {
 	Images []*image `json:"images"`
 }
 
-func (b *BingProvider) DownloadPotd(ctx context.Context, targetDir string) (string, error) {
+func (p *BingProvider) DownloadPotd(ctx context.Context, targetDir string) (string, error) {
 	client := gentleman.New().UseContext(ctx)
 
 	image, err := getPotdImage(client)
