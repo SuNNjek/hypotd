@@ -6,7 +6,7 @@
     pname = "hypotd";
     version = "0.1";
 
-    vendorHash = "sha256-KDEKOybdC+Ef4S042feDpAJpI1gfg32BfuGJVpKpRJQ=";
+    vendorHash = "sha256-vjlEgaC62t5EZkkAuk3qXA5KkadWN674nXorVDtrkjI=";
 
     src = ../.;
     subPackages = ["cmd/hypotd"];

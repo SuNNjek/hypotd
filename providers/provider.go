@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/SuNNjek/hypotd/providers/bing"
+	"github.com/SuNNjek/hypotd/providers/pexels"
 	"github.com/knadh/koanf/v2"
 )
 
@@ -21,6 +22,9 @@ func GetConfiguredProvider(config *koanf.Koanf) (PotdProvider, error) {
 	switch strings.ToLower(providerName) {
 	case "bing":
 		return bing.NewBingProvider(), nil
+
+	case "pexels":
+		return pexels.NewPexelsProvider(config.Cut("pexels"))
 
 	default:
 		return nil, fmt.Errorf("invalid provider \"%s\"", providerName)
