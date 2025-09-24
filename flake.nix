@@ -4,35 +4,38 @@
     '';
 
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-        flake-utils.url = "github:numtide/flake-utils";
+        nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     };
 
     outputs = {
         self,
         nixpkgs,
-        flake-utils,
         ...
-    }: flake-utils.lib.eachDefaultSystem (system:
-        let
-            pkgs = nixpkgs.legacyPackages.${system};
-        in {
-            devShells.default = pkgs.mkShell {
+    }: let
+        allSystems = builtins.attrNames nixpkgs.legacyPackages;
+
+        forAllSystems = (f:
+            nixpkgs.lib.genAttrs allSystems (system:
+                f nixpkgs.legacyPackages.${system}
+            )
+        );
+    in {
+        packages = forAllSystems (pkgs: {
+            hypotd = pkgs.callPackage ./nix/package.nix {};
+            default = self.packages.${pkgs.system}.hypotd;
+        });
+
+        devShells = forAllSystems (pkgs: {
+            default = pkgs.mkShell {
                 packages = with pkgs; [
                     go
                 ];
             };
+        });
 
-            packages = {
-                default = self.packages.${system}.hypotd;
-                hypotd = pkgs.callPackage ./nix/package.nix {};
-            };
-        }
-    ) // flake-utils.lib.eachDefaultSystemPassThrough (system: {
-        # TODO
         homeManagerModules = {
             default = self.homeManagerModules.hypotd;
             hypotd = import ./nix/modules/home-manager.nix self;
         };
-    });
+    };
 }
