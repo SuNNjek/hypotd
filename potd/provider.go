@@ -1,13 +1,13 @@
-package providers
+package potd
 
 import (
 	"context"
 	"fmt"
 	"strings"
 
-	"github.com/SuNNjek/hypotd/providers/apod"
-	"github.com/SuNNjek/hypotd/providers/bing"
-	"github.com/SuNNjek/hypotd/providers/pexels"
+	"github.com/SuNNjek/hypotd/potd/apod"
+	"github.com/SuNNjek/hypotd/potd/bing"
+	"github.com/SuNNjek/hypotd/potd/pexels"
 	"github.com/knadh/koanf/v2"
 )
 
@@ -17,7 +17,7 @@ type PotdProvider interface {
 	DownloadPotd(ctx context.Context, targetDir string) (string, error)
 }
 
-func GetConfiguredProvider(config *koanf.Koanf) (PotdProvider, error) {
+func GetPotdProvider(config *koanf.Koanf) (PotdProvider, error) {
 	providerName := config.String("provider")
 
 	switch strings.ToLower(providerName) {

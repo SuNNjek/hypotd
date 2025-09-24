@@ -1,4 +1,4 @@
-package hyprpaper
+package wallpaper
 
 import (
 	"context"
@@ -6,7 +6,13 @@ import (
 	"os/exec"
 )
 
-func SetWallpaper(ctx context.Context, path string) error {
+type HyprpaperProvider struct{}
+
+func NewHyprpaperProvider() *HyprpaperProvider {
+	return &HyprpaperProvider{}
+}
+
+func (p *HyprpaperProvider) SetWallpaper(ctx context.Context, path string) error {
 	// Unload all old wallpapers
 	unloadCmd := exec.CommandContext(ctx, "hyprctl", "hyprpaper", "unload", "all")
 	if err := unloadCmd.Run(); err != nil {

@@ -43,14 +43,16 @@ and add it to your home manager config:
 
 ## Configuration
 
-### Bing
+### Providers
+
+#### Bing
 
 The Bing provider has no options, just set provider to "bing":
 ```toml
 provider = "bing"
 ```
 
-### Pexels
+#### Pexels
 
 For the Pexels provider you must provide an API key:
 ```toml
@@ -60,7 +62,7 @@ provider = "pexels"
 apiKey = "<API_KEY>" # <-- Replace with your API key
 ```
 
-### NASA Astronomy Picture of the Day
+#### NASA Astronomy Picture of the Day
 
 For the APOD provider you *can* provide an API key. If you don't, it will use the `DEMO_KEY` key
 which is rate-limited (maximum of 30 requests per hour, 50 per day). If you plan to logout/login more
@@ -72,3 +74,15 @@ provider = "apod"
 [apod]
 apiKey = "<API_KEY>" # <-- Replace with your API key (or don't specify any)
 ```
+
+
+### Use custom command to set wallpaper
+
+By default, hypotd uses hyprpaper to set the wallpaper. If you want to use a custom command,
+you can configure it like this:
+
+```toml
+customCommand = "caelestia wallpaper -f {{.Path}}"
+```
+
+This uses a Go template to construct the command. `{{.Path}}` is the path to the wallpaper.

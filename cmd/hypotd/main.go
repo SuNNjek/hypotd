@@ -8,52 +8,35 @@ import (
 	"path"
 
 	"github.com/SuNNjek/hypotd/config"
-	"github.com/SuNNjek/hypotd/hyprpaper"
-	"github.com/SuNNjek/hypotd/providers"
+	"github.com/SuNNjek/hypotd/potd"
 	"github.com/SuNNjek/hypotd/utils"
+	"github.com/SuNNjek/hypotd/wallpaper"
+	"github.com/knadh/koanf/v2"
 )
+
+var applicationConf *koanf.Koanf
 
 func main() {
 	ctx := context.Background()
 
-	configPath, err := getConfigPath()
+	if err := loadConfig(); err != nil {
+		log.Fatalln(err)
+	}
+
+	path, err := downloadWallpaper(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	conf, err := config.LoadConfig(configPath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	dir, err := utils.GetDownloadDir()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := utils.ClearOldFiles(dir, 5); err != nil {
-		log.Fatalln(err)
-	}
-
-	provider, err := providers.GetConfiguredProvider(conf)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	path, err := provider.DownloadPotd(ctx, dir)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := hyprpaper.SetWallpaper(ctx, path); err != nil {
+	if err := setWallpaper(ctx, path); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func getConfigPath() (string, error) {
+func loadConfig() error {
 	userConfDir, err := os.UserConfigDir()
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	defaultConfPath := path.Join(userConfDir, "hypotd", "config.toml")
@@ -63,5 +46,43 @@ func getConfigPath() (string, error) {
 	flag.StringVar(&configPath, "config", defaultConfPath, "Path to the config file")
 	flag.Parse()
 
-	return configPath, err
+	config, err := config.LoadConfig(configPath)
+	if err != nil {
+		return err
+	}
+
+	applicationConf = config
+	return nil
+}
+
+func downloadWallpaper(ctx context.Context) (string, error) {
+	dir, err := utils.GetDownloadDir()
+	if err != nil {
+		return "", err
+	}
+
+	if err := utils.ClearOldFiles(dir, 5); err != nil {
+		return "", err
+	}
+
+	provider, err := potd.GetPotdProvider(applicationConf)
+	if err != nil {
+		return "", err
+	}
+
+	path, err := provider.DownloadPotd(ctx, dir)
+	if err != nil {
+		return "", err
+	}
+
+	return path, nil
+}
+
+func setWallpaper(ctx context.Context, path string) error {
+	provider, err := wallpaper.GetWallpaperProvider(applicationConf)
+	if err != nil {
+		return err
+	}
+
+	return provider.SetWallpaper(ctx, path)
 }
