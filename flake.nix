@@ -21,7 +21,10 @@
         );
     in {
         packages = forAllSystems (pkgs: {
-            hypotd = pkgs.callPackage ./nix/package.nix {};
+            hypotd = pkgs.callPackage ./nix/package.nix {
+                version = self.shortRev or self.dirtyShortRev;
+            };
+
             default = self.packages.${pkgs.system}.hypotd;
         });
 

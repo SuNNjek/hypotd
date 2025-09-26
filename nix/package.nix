@@ -1,10 +1,12 @@
 {
     buildGoModule,
     lib,
+
+    version,
     ...
 }: buildGoModule {
     pname = "hypotd";
-    version = "0.1";
+    inherit version;
 
     vendorHash = "sha256-vjlEgaC62t5EZkkAuk3qXA5KkadWN674nXorVDtrkjI=";
 
