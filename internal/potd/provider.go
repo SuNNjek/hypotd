@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/SuNNjek/hypotd/potd/apod"
-	"github.com/SuNNjek/hypotd/potd/bing"
-	"github.com/SuNNjek/hypotd/potd/pexels"
+	"github.com/SuNNjek/hypotd/internal/potd/apod"
+	"github.com/SuNNjek/hypotd/internal/potd/bing"
+	"github.com/SuNNjek/hypotd/internal/potd/pexels"
 	"github.com/knadh/koanf/v2"
 )
 

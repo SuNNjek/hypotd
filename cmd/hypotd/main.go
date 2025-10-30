@@ -7,10 +7,10 @@ import (
 	"os"
 	"path"
 
-	"github.com/SuNNjek/hypotd/config"
-	"github.com/SuNNjek/hypotd/potd"
-	"github.com/SuNNjek/hypotd/utils"
-	"github.com/SuNNjek/hypotd/wallpaper"
+	"github.com/SuNNjek/hypotd/internal/config"
+	"github.com/SuNNjek/hypotd/internal/potd"
+	"github.com/SuNNjek/hypotd/internal/utils"
+	"github.com/SuNNjek/hypotd/internal/wallpaper"
 	"github.com/knadh/koanf/v2"
 )
 
