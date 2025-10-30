@@ -3,12 +3,9 @@ self: {
   lib,
   pkgs,
   ...
-}: let
-  inherit (lib.modules) mkIf;
-  inherit (lib.options) mkOption mkEnableOption mkPackageOption;
-  inherit (lib.meta) getExe;
-  inherit (lib.trivial) importTOML;
-
+}:
+with lib;
+let
   tomlFormat = pkgs.formats.toml {};
 
   cfg = config.programs.hypotd;
@@ -20,6 +17,15 @@ in {
       package = mkPackageOption self.packages.${pkgs.system} "hypotd" {
         default = "default";
         pkgsText = "hypotd.packages.\${pkgs.system}";
+      };
+
+      target = mkOption {
+        type = types.str;
+        default = config.wayland.systemd.target;
+        defaultText = "config.wayland.systemd.target";
+        description = ''
+          systemd target after which to start the service
+        '';
       };
 
       config = mkOption {
@@ -42,11 +48,14 @@ in {
     systemd.user.services.hypotd = {
       Unit = {
         Description = "hypotd - Picture of the day for hyprpaper";
-        After = [ "network-online.target" ];
+        After = [ "network-online.target" cfg.target ];
+        Wants = [ "network-online.target" ];
       };
+
       Install = {
-        WantedBy = [ "graphical-session.target" ];
+        WantedBy = [ cfg.target ];
       };
+
       Service = {
         Type = "oneshot";
         Restart = "on-failure";
