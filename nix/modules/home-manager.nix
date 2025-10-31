@@ -49,7 +49,6 @@ in {
       Unit = {
         Description = "hypotd - Picture of the day for hyprpaper";
         After = [ "network-online.target" cfg.target ];
-        Wants = [ "network-online.target" ];
       };
 
       Install = {
