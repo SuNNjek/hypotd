@@ -77,8 +77,12 @@ apiKey = "<API_KEY>" # <-- Replace with your API key (or don't specify any)
 
 #### E621/E926
 
-For the E621/E926 provider you need to supply your username and an API key. See https://e621.net/wiki_pages/2425#api
+For the E621/E926 provider you can supply your username and an API key. See https://e621.net/wiki_pages/2425#api
 for instructions on how to generate an API key.
+
+Automatically adds `type` and `randseed` tags to restrict results
+to images and keeping random posts "daily", i.e. re-running the program
+when having "order:random" in the tags will return the same post for the current day.
 
 ```toml
 provider = "e621"

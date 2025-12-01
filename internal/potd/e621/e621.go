@@ -12,6 +12,7 @@ import (
 	"path"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/knadh/koanf/v2"
 	"gopkg.in/h2non/gentleman.v2"
@@ -26,15 +27,7 @@ type E621Provider struct {
 
 func NewE621Provider(conf *koanf.Koanf) (*E621Provider, error) {
 	username := conf.String("username")
-	if username == "" {
-		return nil, errors.New("no username configured")
-	}
-
 	apiKey := conf.String("apiKey")
-	if apiKey == "" {
-		return nil, errors.New("no API key configured")
-	}
-
 	sfw := conf.Bool("sfw")
 	tags := conf.Strings("tags")
 
@@ -68,14 +61,17 @@ func (p *E621Provider) createClient(ctx context.Context) (*gentleman.Client, err
 		baseUrl = "https://e621.net/"
 	}
 
-	authHeader := fmt.Sprintf("%s:%s", p.username, p.apiKey)
-	encAuthHeader := base64.StdEncoding.EncodeToString([]byte(authHeader))
-
 	client := gentleman.New().
 		UseContext(ctx).
 		URL(baseUrl).
-		AddHeader("Authorization", fmt.Sprintf("Basic %s", encAuthHeader)).
 		AddHeader("User-Agent", "hypotd/1.0 (by Sunner on e621)")
+
+	if p.username != "" {
+		authHeader := fmt.Sprintf("%s:%s", p.username, p.apiKey)
+		encAuthHeader := base64.StdEncoding.EncodeToString([]byte(authHeader))
+
+		client = client.AddHeader("Authorization", fmt.Sprintf("Basic %s", encAuthHeader))
+	}
 
 	return client, nil
 }
@@ -83,7 +79,8 @@ func (p *E621Provider) createClient(ctx context.Context) (*gentleman.Client, err
 func (p *E621Provider) getTopPost(client *gentleman.Client) (*Post, error) {
 	req := client.Get().
 		Path("/posts.json").
-		SetQuery("tags", strings.Join(p.tags, " "))
+		SetQuery("limit", "1").
+		SetQuery("tags", strings.Join(p.getTags(), " "))
 
 	resp, err := req.Send()
 	if err != nil {
@@ -95,22 +92,11 @@ func (p *E621Provider) getTopPost(client *gentleman.Client) (*Post, error) {
 		return nil, err
 	}
 
-	allowedExtensions := []string{
-		"png",
-		"jpg",
-		"jpeg",
-		"webp",
+	if len(result.Posts) == 0 {
+		return nil, errors.New("found no posts matching the search query")
 	}
 
-	for _, post := range result.Posts {
-		if slices.ContainsFunc(allowedExtensions, func(ext string) bool {
-			return strings.EqualFold(ext, post.File.Extention)
-		}) {
-			return post, nil
-		}
-	}
-
-	return nil, errors.New("no compatible posts found")
+	return result.Posts[0], nil
 }
 
 func (p *E621Provider) downloadPost(client *gentleman.Client, post *Post, targetDir string) (string, error) {
@@ -132,6 +118,21 @@ func (p *E621Provider) downloadPost(client *gentleman.Client, post *Post, target
 	}
 
 	return downloadPath, nil
+}
+
+func (p *E621Provider) getTags() []string {
+	result := slices.Clone(p.tags)
+
+	// Restrict to images
+	result = append(result, "~type:jpg", "~type:png")
+
+	// Set random seed to current date
+	// That way, random ordering will be deterministic for the current day
+	now := time.Now()
+	seed := now.Format("2006-01-02")
+	result = append(result, fmt.Sprintf("randseed:%s", seed))
+
+	return result
 }
 
 func verifyExistingFile(post *Post, filePath string) bool {
