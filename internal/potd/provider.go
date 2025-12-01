@@ -7,6 +7,7 @@ import (
 
 	"github.com/SuNNjek/hypotd/internal/potd/apod"
 	"github.com/SuNNjek/hypotd/internal/potd/bing"
+	"github.com/SuNNjek/hypotd/internal/potd/e621"
 	"github.com/SuNNjek/hypotd/internal/potd/pexels"
 	"github.com/knadh/koanf/v2"
 )
@@ -29,6 +30,9 @@ func GetPotdProvider(config *koanf.Koanf) (PotdProvider, error) {
 
 	case "apod":
 		return apod.NewApodProvider(config.Cut("apod")), nil
+
+	case "e621":
+		return e621.NewE621Provider(config.Cut("e621"))
 
 	default:
 		return nil, fmt.Errorf("invalid provider \"%s\"", providerName)

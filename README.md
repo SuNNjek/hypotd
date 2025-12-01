@@ -11,7 +11,7 @@ This repository contains a Nix flake you can use to install hypotd with home man
     inputs = {
         # ...
 
-		hypotd.url = "github:SuNNjek/hypotd";
+        hypotd.url = "github:SuNNjek/hypotd";
     };
 
     # ...
@@ -21,21 +21,21 @@ This repository contains a Nix flake you can use to install hypotd with home man
 and add it to your home manager config:
 ```nix
 { inputs, ... }: {
-	imports = [
-		inputs.hypotd.homeManagerModules.default
-	];
-	
-	programs.hypotd = {
-		enable = true;
+    imports = [
+        inputs.hypotd.homeManagerModules.default
+    ];
+    
+    programs.hypotd = {
+        enable = true;
 
-		config = {
-			provider = "pexels";
+        config = {
+            provider = "pexels";
 
-			pexels = {
-				apiKey = "<API_KEY>";
-			};
-		};
-	};
+            pexels = {
+                apiKey = "<API_KEY>";
+            };
+        };
+    };
 
     # ...
 }
@@ -73,6 +73,21 @@ provider = "apod"
 
 [apod]
 apiKey = "<API_KEY>" # <-- Replace with your API key (or don't specify any)
+```
+
+#### E621/E926
+
+For the E621/E926 provider you need to supply your username and an API key. See https://e621.net/wiki_pages/2425#api
+for instructions on how to generate an API key.
+
+```toml
+provider = "e621"
+
+[e621]
+username = "<USERNAME>"
+apiKey = "<API_KEY>"
+sfw = true # <-- Whether or not to use the E926 (aka E621 but safe for work) API. Defaults to false if not given!
+tags = [ "order:random", "buizel" ] # <-- Search tags to use. hypotd will use the first image result returned by the search
 ```
 
 
